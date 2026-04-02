@@ -129,7 +129,7 @@ function shootAttack(amount, giftName, senderName = "未知指令") {
 }
 
 // 核心: 增加经验与任务进度
-function changeEnergy(amount, giftName) {
+function changeEnergy(amount, giftName, senderName) {
     if(!systemState.isAlive) return;
 
     // 触发连击机制
@@ -155,7 +155,7 @@ function changeEnergy(amount, giftName) {
 
     systemState.energy = Math.min(systemState.maxEnergy, Math.max(0, systemState.energy + finalAmount));
     updateUI();
-    shootAttack(finalAmount, giftName); // 动图表现依然基于原始数量
+    shootAttack(finalAmount, giftName, senderName); // 动图表现依然基于原始数量
 
     if(systemState.energy >= systemState.maxEnergy) {
         setTimeout(triggeredEvolution, 500); // 延迟一点等特效飞完
@@ -297,13 +297,13 @@ window.simulateGift = function (giftName, mockValue, userName) {
 
     if(mockValue <= 10) {
         // 微小礼物 (+点经验)
-        changeEnergy(mockValue, giftName);
+        changeEnergy(mockValue, giftName, userName);
         logMsg = `[ 协议破解 ] ${userName} 正在突破防火墙... 防护 -${mockValue}%`;
         spawnEnergyPopup(comboCount > 5 ? `COMBO x${comboCount}!` : `+${mockValue} DMG`, false);
     } 
     else if (mockValue <= 200) {
         // 中大型礼物 (+大点经验)
-        changeEnergy(mockValue, giftName);
+        changeEnergy(mockValue, giftName, userName);
         logMsg = `[ 高危警报 ] 指挥官 ${userName} 投入了 [${giftName}]。目标禁区产生剧烈波动！`;
         css = "term-power";
         spawnEnergyPopup(comboCount > 5 ? `CRITICAL COMBO!!` : `+${mockValue} DMG`, true);
@@ -496,7 +496,7 @@ function connectLiveStream() {
             
             // 1. 弹幕处理 (Type 1 或 danmu)
             if(action === 'danmu' || action === 1) {
-                if(Math.random() > 0.5) triggerGift('energy'); // 不然满屏幕都是特效会卡，限制频率
+                if(Math.random() > 0.5) triggerGift('energy', sender); // 不然满屏幕都是特效会卡，限制频率
             }
             
             // 2. 礼物处理 (Type 5 或 gift)
@@ -508,9 +508,9 @@ function connectLiveStream() {
                 
                 typeWriterLog(`[ 支援 ] 指挥官 [${sender}] 授权了 ${giftName} x${count}`);
                 
-                if (price < 10) triggerGift('energy');         // 免费包裹或1抖币(小心心)
-                else if (price < 3000) triggerGift('upgrade'); // 10抖币以上~3000以内抖币，中型火力
-                else triggerGift('nuke');                      // 高级礼物(如嘉年华)，满屏核爆
+                if (price < 10) triggerGift('energy', sender);         // 免费包裹或1抖币(小心心)
+                else if (price < 3000) triggerGift('upgrade', sender); // 10抖币以上~3000以内抖币，中型火力
+                else triggerGift('nuke', sender);                      // 高级礼物(如嘉年华)，满屏核爆
             }
         } catch(e) {
             console.error("解析弹幕包错误", e);
