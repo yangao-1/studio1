@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>赛博龙虾 - 控制进化引擎 (PoC)</title>
+    <link rel="stylesheet" href="style.css?v=8">
+</head>
+<body>
+    <!-- OBS 采集区域 (模拟手机 9:16 比例) -->
+    <div id="obs-screen">
+        <!-- 顶部状态栏 -->
+        <div id="status-header">
+            <div class="warning-text" style="color: #4df8eb;">🎯 战术雷达: 任务执行中 🎯</div>
+            <div class="level-indicator">形态: <span id="lob-level">1 (幼虫单体)</span></div>
+        </div>
+        
+        <!-- 真实数据源连接监控 -->
+        <div id="connection-status">
+            <span class="status-dot disconnected"></span>
+            <span id="ws-status-text">数据源未连接 (离线模式)</span>
+            <div id="combo-meter" class="hidden">连击 <span id="combo-count">0</span>!!</div>
+        </div>
+
+        <!-- 战备军火授权指南 (观众可见打赏诱导) -->
+        <div id="gift-guide">
+            <div class="guide-title">&gt; 支援火力_</div>
+            <div class="guide-item"><span class="g-icon">📦</span><span class="g-name">基础物资</span><span class="g-dmg">追踪弹</span></div>
+            <div class="guide-item"><span class="g-icon">💎</span><span class="g-name">能源水晶</span><span class="g-dmg">多管齐射</span></div>
+            <div class="guide-item"><span class="g-icon">👑</span><span class="g-name">歼星授权</span><span class="g-dmg epic-dmg">核爆秒杀</span></div>
+        </div>
+
+        <!-- 任务作战全息沙盘 (取代原有的培养舱) -->
+        <div id="visual-center" class="bg-tier-1">
+            <div class="scanline"></div>
+            <div id="mission-bg" class="grid-tier-1"></div>
+            
+            <div id="mission-header">
+                <span id="mission-title">[ 主线 ] 清剿浅海生物群</span>
+                <span id="mission-status">IN PROGRESS...</span>
+            </div>
+
+            <!-- 横向战斗/任务场景 -->
+            <div id="battle-field">
+                <!-- 赛博金属龙虾复合结构 (纯数据渲染全息形态) -->
+                <div id="player-entity" class="mech-lobster tier-1">
+                    <svg viewBox="-60 -60 320 320" width="100%" height="100%" class="cyber-mech">
+                        <!-- 核心材质库 -->
+                        <defs>
+                            <linearGradient id="metal-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#555a66" />
+                                <stop offset="50%" stop-color="#1e222a" />
+                                <stop offset="100%" stop-color="#050508" />
+                            </linearGradient>
+                            <linearGradient id="metal-light" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stop-color="#8b95a5" />
+                                <stop offset="100%" stop-color="#2a2d34" />
+                            </linearGradient>
+                            <linearGradient id="neon-cyan" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#00ffff" />
+                                <stop offset="100%" stop-color="#0066ff" />
+                            </linearGradient>
+                            <filter id="neon-glow" x="-50%" y="-50%" width="200%" height="200%">
+                                <feGaussianBlur stdDeviation="3" result="blur" />
+                                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                            </filter>
+                            <filter id="hyper-glow" x="-100%" y="-100%" width="300%" height="300%">
+                                <feGaussianBlur stdDeviation="6" result="blur" />
+                                <feBlend in="SourceGraphic" in2="blur" mode="screen" />
+                            </filter>
+                            <clipPath id="core-clip">
+                                <circle cx="100" cy="110" r="26"/>
+                            </clipPath>
+                        </defs>
+
+                        <!-- 光环/阵法 (Tier 4) -->
+                        <g class="part-halo tier-part">
+                            <circle cx="100" cy="100" r="155" fill="none" stroke="#ff0055" stroke-width="1.5" stroke-dasharray="5 15" filter="url(#hyper-glow)" class="spin-fast" />
+                            <polygon points="100,-50 120,-10 170,0 130,30 150,80 100,50 50,80 70,30 30,0 80,-10" fill="none" stroke="rgba(255,0,85,0.4)" stroke-width="2" class="spin-reverse-slow"/>
+                        </g>
+
+                        <!-- 虚空盾/星轨 (Tier 3) -->
+                        <g class="part-shield tier-part">
+                            <circle cx="100" cy="100" r="140" fill="none" stroke="#ffcc00" stroke-width="1.5" stroke-dasharray="10 20" filter="url(#neon-glow)" class="spin-slow" />
+                            <circle cx="100" cy="100" r="130" fill="none" stroke="#ffaa00" stroke-width="3" stroke-dasharray="40 60 10 20" filter="url(#neon-glow)" class="spin-reverse-slow" />
+                            <path d="M -40,100 A 140 140 0 0 1 240 100" fill="none" stroke="rgba(255, 204, 0, 0.3)" stroke-width="8" filter="url(#neon-glow)" />
+                        </g>
+
+                        <!-- 超维度光翼 (Tier 4) -->
+                        <g class="part-wings tier-part">
+                            <!-- 更复杂的机械光翼拓扑 -->
+                            <path class="wing left-wing" d="M80,100 L-50,20 L-90,40 L-30,90 L-80,120 L0,120 Z" fill="rgba(255, 0, 85, 0.2)" stroke="#ff0055" stroke-width="2" filter="url(#hyper-glow)"/>
+                            <path class="wing right-wing" d="M120,100 L250,20 L290,40 L230,90 L280,120 L200,120 Z" fill="rgba(255, 0, 85, 0.2)" stroke="#ff0055" stroke-width="2" filter="url(#hyper-glow)"/>
+                            <path class="wing left-wing-inner" d="M80,100 L-20,50 L-40,70 L10,100 Z" fill="#ff0055" filter="url(#neon-glow)"/>
+                            <path class="wing right-wing-inner" d="M120,100 L220,50 L240,70 L190,100 Z" fill="#ff0055" filter="url(#neon-glow)"/>
+                        </g>
+
+                        <!-- 机甲多关节强殖节肢 -->
+                        <g class="anim-legs">
+                            <!-- 左侧三条 (液压结构) -->
+                            <g class="leg-l"><path d="M70,90 L20,110 L-10,100" fill="none" stroke="url(#metal-light)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="110" r="3" fill="#0ff" filter="url(#neon-glow)"/></g>
+                            <g class="leg-l"><path d="M65,110 L15,145 L-15,140" fill="none" stroke="url(#metal-light)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="15" cy="145" r="3" fill="#0ff" filter="url(#neon-glow)"/></g>
+                            <g class="leg-l"><path d="M65,130 L20,170 L-5,185" fill="none" stroke="url(#metal-light)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="170" r="3" fill="#0ff" filter="url(#neon-glow)"/></g>
+                            <!-- 右侧三条 (液压结构) -->
+                            <g class="leg-r"><path d="M130,90 L180,110 L210,100" fill="none" stroke="url(#metal-light)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="180" cy="110" r="3" fill="#0ff" filter="url(#neon-glow)"/></g>
+                            <g class="leg-r"><path d="M135,110 L185,145 L215,140" fill="none" stroke="url(#metal-light)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="185" cy="145" r="3" fill="#0ff" filter="url(#neon-glow)"/></g>
+                            <g class="leg-r"><path d="M135,130 L180,170 L205,185" fill="none" stroke="url(#metal-light)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="180" cy="170" r="3" fill="#0ff" filter="url(#neon-glow)"/></g>
+                        </g>
+
+                        <!-- 精密机械尾部 (含矢量量子推进器) -->
+                        <g class="anim-tail">
+                            <!-- 折叠鳞片护甲 -->
+                            <polygon points="80,140 120,140 125,160 115,190 135,225 100,205 65,225 85,190 75,160" fill="url(#metal-grad)" stroke="#111" stroke-width="2"/>
+                            <!-- 脊椎导能体 -->
+                            <line x1="100" y1="140" x2="100" y2="195" stroke="#00ffff" stroke-width="2.5" stroke-dasharray="3 3" filter="url(#neon-glow)"/>
+                            <!-- 矢量推进器群 -->
+                            <polygon points="90,195 110,195 120,230 100,215 80,230" fill="#08080a" stroke="#333" stroke-width="1.5"/>
+                            <polygon points="95,200 105,200 100,245" fill="#00ffff" filter="url(#hyper-glow)" class="anim-thruster"/>
+                        </g>
+
+                        <!-- 左巨型液压破甲钳 -->
+                        <g class="anim-claw-l">
+                            <!-- 高强度连接大臂 -->
+                            <path d="M75,70 Q35,50 20,35" fill="none" stroke="url(#metal-light)" stroke-width="16" stroke-linecap="round"/>
+                            <circle cx="20" cy="35" r="8" fill="#111" stroke="#00ffff" stroke-width="2" filter="url(#neon-glow)"/>
+                            <!-- 前臂钳基座 -->
+                            <polygon points="30,35 -15,5 -45,35 -15,65" fill="url(#metal-grad)" stroke="#111" stroke-width="2"/>
+                            <!-- 动态内侧副刃 (用于切割) -->
+                            <polygon points="-15,5 -45,-15 -20,-5" fill="url(#metal-light)" stroke="#0ff" stroke-width="1.5" class="claw-blade-inner"/>
+                            <!-- 外部主破甲刃/动能发生器 -->
+                            <polygon points="-45,35 -80,-5 -30,5" fill="url(#metal-light)" stroke="#00ffff" stroke-width="2" filter="url(#neon-glow)" class="claw-blade-outer"/>
+                            <!-- 高能散热孔 -->
+                            <circle cx="-15" cy="25" r="4" fill="#fff" filter="url(#neon-glow)"/>
+                        </g>
+                        <!-- 右巨型液压破甲钳 -->
+                        <g class="anim-claw-r">
+                            <!-- 高强度连接大臂 -->
+                            <path d="M125,70 Q165,50 180,35" fill="none" stroke="url(#metal-light)" stroke-width="16" stroke-linecap="round"/>
+                            <circle cx="180" cy="35" r="8" fill="#111" stroke="#00ffff" stroke-width="2" filter="url(#neon-glow)"/>
+                            <!-- 前臂钳基座 -->
+                            <polygon points="170,35 215,5 245,35 215,65" fill="url(#metal-grad)" stroke="#111" stroke-width="2"/>
+                            <!-- 动态内侧副刃 -->
+                            <polygon points="215,5 245,-15 220,-5" fill="url(#metal-light)" stroke="#0ff" stroke-width="1.5" class="claw-blade-inner-r"/>
+                            <!-- 外部主破甲刃 -->
+                            <polygon points="245,35 280,-5 230,5" fill="url(#metal-light)" stroke="#00ffff" stroke-width="2" filter="url(#neon-glow)" class="claw-blade-outer-r"/>
+                            <!-- 高能散热孔 -->
+                            <circle cx="215" cy="25" r="4" fill="#fff" filter="url(#neon-glow)"/>
+                        </g>
+
+                        <!-- 肩部双联电磁加速炮 (Tier 2 激活) -->
+                        <g class="part-cannons tier-part">
+                            <!-- 左炮组 -->
+                            <g class="cannon-l">
+                                <rect x="30" y="5" width="26" height="70" rx="4" fill="url(#metal-grad)" stroke="#222" stroke-width="2"/>
+                                <!-- 炮管 -->
+                                <rect x="37" y="-25" width="12" height="35" fill="#151515" stroke="#00ffff" stroke-width="1.5"/>
+                                <!-- 加速电圈 -->
+                                <line x1="33" y1="-10" x2="53" y2="-10" stroke="#00ffff" stroke-width="2" filter="url(#neon-glow)"/>
+                                <line x1="33" y1="-5" x2="53" y2="-5" stroke="#00ffff" stroke-width="2" filter="url(#neon-glow)"/>
+                                <circle cx="43" cy="-25" r="5" fill="#fff" filter="url(#hyper-glow)"/>
+                            </g>
+                            <!-- 右炮组 -->
+                            <g class="cannon-r">
+                                <rect x="144" y="5" width="26" height="70" rx="4" fill="url(#metal-grad)" stroke="#222" stroke-width="2"/>
+                                <rect x="151" y="-25" width="12" height="35" fill="#151515" stroke="#00ffff" stroke-width="1.5"/>
+                                <line x1="147" y1="-10" x2="167" y2="-10" stroke="#00ffff" stroke-width="2" filter="url(#neon-glow)"/>
+                                <line x1="147" y1="-5" x2="167" y2="-5" stroke="#00ffff" stroke-width="2" filter="url(#neon-glow)"/>
+                                <circle cx="157" cy="-25" r="5" fill="#fff" filter="url(#hyper-glow)"/>
+                            </g>
+                        </g>
+
+                        <!-- 头部侦测网络 & 战术触须 -->
+                        <g class="anim-head">
+                            <polygon points="65,45 100,5 135,45" fill="url(#metal-grad)" stroke="#222" stroke-width="2"/>
+                            <!-- 高维神经索(触须) -->
+                            <path d="M80,30 Q35,-20 0,10" fill="none" stroke="url(#neon-cyan)" stroke-width="2.5" filter="url(#hyper-glow)" class="anim-antenna-l"/>
+                            <path d="M120,30 Q165,-20 200,10" fill="none" stroke="url(#neon-cyan)" stroke-width="2.5" filter="url(#hyper-glow)" class="anim-antenna-r"/>
+                            <!-- 瞄准复眼阵列 -->
+                            <circle cx="85" cy="35" r="4.5" fill="#ff0055" filter="url(#neon-glow)"/>
+                            <circle cx="115" cy="35" r="4.5" fill="#ff0055" filter="url(#neon-glow)"/>
+                            <!-- 全向传感器 -->
+                            <circle cx="100" cy="25" r="5" fill="#00ffff" filter="url(#hyper-glow)"/>
+                        </g>
+
+                        <!-- 装甲核心躯干 (重型多层覆盖) -->
+                        <g class="anim-body">
+                            <!-- 外挂防爆层 -->
+                            <polygon points="100,30 150,65 160,125 130,165 70,165 40,125 50,65" fill="url(#metal-grad)" stroke="#1a1a1a" stroke-width="4"/>
+                            <!-- 流光能量槽 -->
+                            <polygon points="100,40 140,70 145,115 120,150 80,150 55,115 60,70" fill="none" stroke="url(#neon-cyan)" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.6"/>
+
+                            <!-- 前胸重装偏导盾 -->
+                            <path d="M100,45 L130,75 L130,125 L100,155 L70,125 L70,75 Z" fill="url(#metal-light)" stroke="#2a2d34" stroke-width="2"/>
+                            <polygon points="100,50 120,75 120,105 100,95" fill="#3a3f4a"/>
+                            <polygon points="100,50 80,75 80,105 100,95" fill="#4a505e"/>
+
+                            <!-- 奇点聚变堆芯 (Deep-sea/Cosmic Engine) -->
+                            <circle cx="100" cy="110" r="28" fill="#0a0a0c" stroke="#222" stroke-width="5"/>
+                            <g clip-path="url(#core-clip)">
+                                <path d="M100,75 L100,145 M65,110 L135,110 M75,85 L125,135 M75,135 L125,85" stroke="#00ffff" stroke-width="3" opacity="0.5" class="spin-fast"/>
+                            </g>
+                            <circle cx="100" cy="110" r="18" fill="url(#neon-cyan)" class="anim-core" filter="url(#hyper-glow)"/>
+                            <circle cx="100" cy="110" r="6" fill="#ffffff" filter="url(#hyper-glow)"/>
+                        </g>
+                    </svg>
+                </div>
+                
+                <!-- 弹道与特效层 -->
+                <div id="fx-layer"></div>
+
+                <!-- 任务目标 (敌方结构) -->
+                <div id="target-entity">
+                    <div id="target-icon">
+                        <div class="cyber-target-container">未知生命体</div>
+                    </div>
+                    <div class="target-hp-bar"><div id="target-hp-fill"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 悬浮礼物特效层 -->
+        <div id="gift-flylayer"></div>
+
+        <!-- 能量条与任务进度 -->
+        <div id="energy-section">
+            <div class="energy-label">核心任务完成度 (PROGRESS): <span id="energy-text">0%</span></div>
+            <div class="progress-bar-container">
+                <div id="energy-bar" style="width: 0%;"></div>
+            </div>
+            <div id="critical-warning" class="hidden" style="color: #ff00ff;">MISSION CLEAR: 形态突变晋级中！</div>
+        </div>
+
+        <!-- 底部 AI 终端面板 -->
+        <div id="terminal-panel">
+            <div class="terminal-header">> 监测终端日志 [SYS_LOG]</div>
+            <div id="terminal-content">
+                <!-- 打字机字幕在这里输出 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 侧边调试控制台 (供你测试点击，实际上线时不播出去) -->
+    <div id="debug-panel" style="width: 300px;">
+        <h3>🔧 抖音礼物映射控制台</h3>
+        
+        <div class="gift-group">
+            <h4>[ 阶段1：弱点撕咬 ] (+10 EXP)</h4>
+            <button onclick="simulateGift('普通礼物', 10, '观众A')">呼叫掩护【普通礼物】</button>
+            <button onclick="simulateGift('精美礼物', 10, '观众B')">释放剧毒【精美礼物】</button>
+        </div>
+
+        <div class="gift-group">
+            <h4>[ 阶段2：火力压制 ] (+50 EXP)</h4>
+            <button onclick="simulateGift('高级礼物', 50, '测试001')">部署机雷【高级礼物】</button>
+            <button onclick="simulateGift('豪华礼物', 50, '大哥_赵总')">呼叫轰炸【豪华礼物】</button>
+        </div>
+
+        <div class="gift-group">
+            <h4>[ 阶段3：重装破除 ] (+200 EXP)</h4>
+            <button onclick="simulateGift('顶级礼物', 200, '神明_木木')">加载轨道炮【顶级礼物】</button>
+            <button onclick="simulateGift('梦幻礼物', 200, '神豪_王木木')">机械军团突袭【梦幻礼物】</button>
+        </div>
+
+        <div class="gift-group">
+            <h4>[ 阶段4：绝对歼星 ] (+1000 EXP)</h4>
+            <button onclick="simulateGift('至尊礼物', 1000, '上帝_龙傲天')">执行歼灭指令【至尊礼物】</button>
+        </div>
+
+        <hr>
+        <button style="background:#225522; margin-top: 10px;" onclick="triggerClear()">重置形态与等级</button>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
