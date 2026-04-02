@@ -537,3 +537,119 @@ body {
         transform-origin: top left;
     }
 }
+
+/* ============================================================
+   优化视觉效果：真实姓名标识 & 激光弹道 & 溅射火花 
+   ============================================================ */
+
+/* 观众姓名跟随飞船/标识 */
+.sender-label {
+    position: absolute;
+    top: -24px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    color: #fff;
+    background: rgba(0, 150, 255, 0.4);
+    border: 1px solid #00ffff;
+    border-radius: 4px;
+    padding: 1px 6px;
+    white-space: nowrap;
+    text-shadow: 0 0 5px #00ffff;
+    box-shadow: 0 0 8px rgba(0, 255, 255, 0.6);
+    pointer-events: none;
+    font-weight: bold;
+    z-index: 100;
+}
+
+/* 把原本普通的子弹换成更科幻的弹道 (覆盖原来的 .projectile) */
+.projectile {
+    width: 30px; height: 3px;
+    background: linear-gradient(90deg, transparent, #00ffff, #ffffff);
+    border-radius: 5px;
+    box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+    transition: left 0.25s linear, top 0.25s linear;
+}
+.projectile-big {
+    width: 80px; height: 8px;
+    background: linear-gradient(90deg, transparent, #ff00ff, #ffffff);
+    border-radius: 20px;
+    box-shadow: 0 0 20px #ff00ff, 0 0 40px #ff00ff;
+    transition: left 0.25s ease-in, top 0.25s ease-in;
+}
+
+/* 打击到靶子部位的物理火花溅射 */
+.hit-spark {
+    position: absolute;
+    width: 6px; height: 6px;
+    background: #ffcc00;
+    border-radius: 50%;
+    box-shadow: 0 0 10px currentColor;
+    pointer-events: none;
+    z-index: 99;
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    transition: transform 0.4s cubic-bezier(0.1, 0.8, 0.3, 1), opacity 0.4s ease-out;
+}
+.hit-spark.spark-fly {
+    transform: translate(calc(-50% + var(--vx)), calc(-50% + var(--vy))) scale(0.1);
+    opacity: 0;
+}
+
+/* ============================================================
+   优化视觉效果：真实姓名标识 & 激光弹道 & 溅射火花 
+   ============================================================ */
+
+/* 观众姓名跟随飞船/标识 */
+.sender-label {
+    position: absolute;
+    top: -24px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    color: #fff;
+    background: rgba(0, 150, 255, 0.4);
+    border: 1px solid #00ffff;
+    border-radius: 4px;
+    padding: 1px 6px;
+    white-space: nowrap;
+    text-shadow: 0 0 5px #00ffff;
+    box-shadow: 0 0 8px rgba(0, 255, 255, 0.6);
+    pointer-events: none;
+    font-weight: bold;
+    z-index: 100;
+}
+
+/* 覆盖原本的 .projectile，变成更科幻的能量激光 */
+.projectile {
+    width: 30px !important; height: 3px !important;
+    background: linear-gradient(90deg, transparent, #00ffff, #ffffff) !important;
+    border-radius: 5px !important;
+    box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff !important;
+    transition: left 0.25s linear, top 0.25s linear !important;
+}
+.projectile-big {
+    width: 80px !important; height: 8px !important;
+    background: linear-gradient(90deg, transparent, #ff00ff, #ffffff) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 0 20px #ff00ff, 0 0 40px #ff00ff !important;
+    transition: left 0.25s ease-in, top 0.25s ease-in !important;
+}
+
+/* 击中靶心部位的物理火花溅射 */
+.hit-spark {
+    position: absolute;
+    width: 6px; height: 6px;
+    background: #ffcc00;
+    border-radius: 50%;
+    box-shadow: 0 0 10px currentColor;
+    pointer-events: none;
+    z-index: 99;
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    transition: transform 0.4s cubic-bezier(0.1, 0.8, 0.3, 1), opacity 0.4s ease-out;
+}
+.hit-spark.spark-fly {
+    transform: translate(calc(-50% + var(--vx)), calc(-50% + var(--vy))) scale(0.1);
+    opacity: 0;
+}

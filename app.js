@@ -60,10 +60,9 @@ const EVOLUTION_TIERS = {
 };
 
 // 发射攻击/施法特效
-function shootAttack(amount, giftName) {
+function shootAttack(amount, giftName, senderName = "未知指令") {
     let effectClass = EVOLUTION_TIERS[systemState.level]?.effect || 'projectile';
     
-    // 动态生成帮手 (根据礼物大小)
     let helperStr = '⚔️'; 
     if(amount <= 10) helperStr = ['✨', '🔥', '⚡'][Math.floor(Math.random()*3)];
     if(amount > 10 && amount <= 200) helperStr = ['🚀', '🛸', '🛰️'][Math.floor(Math.random()*3)];
@@ -71,7 +70,13 @@ function shootAttack(amount, giftName) {
 
     let helper = document.createElement('div');
     helper.className = 'helper-entity';
-    helper.innerText = Array.isArray(helperStr) ? helperStr.join('') : helperStr;
+    
+    // ------ 核心修改：生成带有姓名的标牌 ------
+    let innerHtml = `
+        <div class="sender-label">${senderName}</div>
+        <div class="helper-icon">${Array.isArray(helperStr) ? helperStr.join('') : helperStr}</div>
+    `;
+    helper.innerHTML = innerHtml;
     
     // 随机出现在龙虾周围
     let hLeft = 10 + Math.random() * 40; // 左侧或偏中 10~50%
