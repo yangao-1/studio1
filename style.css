@@ -160,9 +160,9 @@ body {
     transform: scale(1.8) translateY(-25px); bottom: 20px !important;
     transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.tier-3 .part-cannons { opacity: 1 !important; transform: translateY(-10px) scale(2) !important; filter: drop-shadow(0 0 20px #ff0000); }
+.tier-3 .part-cannons { opacity: 1 !important; transform: translateY(-10px) scale(1.2) !important; filter: drop-shadow(0 0 20px #ff0000); }
 .tier-3 .part-shield { opacity: 1 !important; transform: scale(1.5); filter: drop-shadow(0 0 30px #ffcc00); stroke-width: 4px; }
-.tier-3 .part-cannons { opacity: 1 !important; transform: translateY(-10px) scale(2) !important; filter: drop-shadow(0 0 20px #ff0000); }
+.tier-3 .part-cannons { opacity: 1 !important; transform: translateY(-10px) scale(1.2) !important; filter: drop-shadow(0 0 20px #ff0000); }
 .tier-3 .part-shield { opacity: 1 !important; transform: scale(1.5); filter: drop-shadow(0 0 30px #ffcc00); stroke-width: 4px; }
 .tier-3 .part-cannons, .tier-3 .part-shield { opacity: 1; }
 
@@ -172,7 +172,7 @@ body {
     transform: scale(2.6) translateY(-50px); bottom: 50px !important; 
     animation: dragon-rage 0.15s infinite;
 }
-.tier-4 .part-cannons { opacity: 1 !important; transform: translateY(-20px) scale(3) !important; filter: drop-shadow(0 0 50px #ff00ff); }
+.tier-4 .part-cannons { opacity: 1 !important; transform: translateY(-5px) scale(1.4) !important; filter: drop-shadow(0 0 50px #ff00ff); }
 .tier-4 .part-shield { opacity: 1 !important; transform: scale(2.5); stroke-width: 6px; stroke: #ff00ff; filter: drop-shadow(0 0 50px #ff0000); }
 .tier-4 .part-wings { opacity: 1 !important; transform: scale(2.5); filter: drop-shadow(0 0 40px rgb(255,0,255)); }
 .tier-4 .part-halo { opacity: 1 !important; transform: scale(3); stroke-dasharray: 5,5; animation: shield-spin 1s linear infinite; }
@@ -662,4 +662,16 @@ body {
 /* Fix transform origins so scaling happens from center (the lobster's center is roughly 100, 100) */
 .tier-part {
     transform-origin: 100px 100px;
+}
+
+/* -------------------------------------------------------------
+   UI Z-INDEX FIX: UI Stays Above Animations
+------------------------------------------------------------- */
+#status-header, #connection-status, #gift-guide {
+    position: relative;
+    z-index: 1000 !important;
+}
+#mission-header {
+    position: relative;
+    z-index: 1000 !important;
 }
