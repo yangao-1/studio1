@@ -653,3 +653,13 @@ body {
     transform: translate(calc(-50% + var(--vx)), calc(-50% + var(--vy))) scale(0.1);
     opacity: 0;
 }
+
+/* Fix SVG clipping */
+#player-entity svg.cyber-mech {
+    overflow: visible !important;
+}
+
+/* Fix transform origins so scaling happens from center (the lobster's center is roughly 100, 100) */
+.tier-part {
+    transform-origin: 100px 100px;
+}
